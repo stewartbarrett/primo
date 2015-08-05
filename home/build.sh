@@ -30,7 +30,7 @@ cmd=$(echo "$cmd" | sed "s/<deployment-group-name>/$deployment_group/")
 cmd=$(echo "$cmd" | sed "s/--description <description>//")
 
 #strips out the 'deployment config name'
-cmd=$(echo "$cmd" | sed "s/-'-deployment-config-name <deployment-config-name>//")
+cmd=$(echo "$cmd" | sed "s/--deployment-config-name <deployment-config-name>//")
 
 # Creates the deployment script to run in the 'deploy' stage of the GO pipeline
 tee "deploy.sh" > /dev/null <<EOF
