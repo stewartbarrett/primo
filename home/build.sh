@@ -37,4 +37,38 @@ tee "deploy.sh" > /dev/null <<EOF
 #!/bin/bash
 set -e
 $cmd
+
+output=\$($cmd)
+deployment_id=\$(echo "\$output" | jq -r .deploymentId)
+echo
+echo "Deploying ${application_name} ..."
+echo "Deployment ID: \$deployment_id"
+echo
+echo "Waiting for CodeDeploy to complete..."
+echo
+
+while true; do
+  deployment_info=\$(aws --region $region deploy get-deployment --deployment-id \$deployment_id)
+  deployment_status=\$(echo "\$deployment_info" | jq -r .deploymentInfo.status)
+  case "\$deployment_status" in
+    Succeeded|Skipped)
+      echo "Deployment \$deployment_status"
+      exit 0
+      ;;
+    Created|InProgress|Pending)
+      echo "Deployment \$deployment_status"
+      echo "Sleeping for 30s before next status check..."
+      sleep 30
+      ;;
+    *)
+      echo "Deployment status: \$deployment_status"
+      errorCode=\$(echo "\$deployment_info" | jq -r .deploymentInfo.errorInformation.code)
+      errorMessage=\$(echo "\$deployment_info" | jq -r .deploymentInfo.errorInformation.message)
+      if [ -n "\$errorCode" ]; then
+        echo "\$errorCode: \$errorMessage"
+      fi
+      exit 1
+      ;;
+  esac
+done
 EOF
