@@ -36,7 +36,6 @@ cmd=$(echo "$cmd" | sed "s/--deployment-config-name <deployment-config-name>//")
 tee "deploy.sh" > /dev/null <<EOF
 #!/bin/bash
 set -e
-$cmd
 
 output=\$($cmd)
 deployment_id=\$(echo "\$output" | jq -r .deploymentId)
