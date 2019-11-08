@@ -1,0 +1,6 @@
+services:
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.2.1
+    environment:
+      SERVER_NAME: kibana.example.org
+      ELASTICSEARCH_URL: http://elasticsearch.example.org
